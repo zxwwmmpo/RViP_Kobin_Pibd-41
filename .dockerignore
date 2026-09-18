@@ -1,0 +1,6 @@
+.git
+.idea
+.mvn
+target/*
+!target/*.jar
+*.log

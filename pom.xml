@@ -121,6 +121,18 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>5.0.3</version>
+                <configuration>
+                    <changeLogFile>db/changelog/db.changelog-master.xml</changeLogFile>
+                    <url>jdbc:postgresql://localhost:5432/vetclinic</url>
+                    <username>admin</username>
+                    <password>password</password>
+                    <contexts>local</contexts>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 

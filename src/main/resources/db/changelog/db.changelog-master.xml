@@ -5,19 +5,9 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <changeSet id="1" author="student">
-        <createTable tableName="employee">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="full_name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="qualification" type="VARCHAR(255)"/>
-            <column name="status" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
+    <include file="changes/001-create-employee.xml"
+             relativeToChangelogFile="true"/>
+    <include file="changes/002-insert-employees.xml"
+             relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

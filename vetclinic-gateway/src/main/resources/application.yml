@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: vetclinic-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: employees
+              uri: ${EMPLOYEE_SERVICE_URL:http://localhost:8080}
+              predicates:
+                - Path=/api/employees,/api/employees/**
+
+            - id: reports
+              uri: ${REPORT_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/reports,/api/reports/**

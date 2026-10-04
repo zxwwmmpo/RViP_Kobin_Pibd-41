@@ -29,6 +29,47 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/employees/report" ]
+      interval: 1s
+      timeout: 5s
+      start_period: 60s
+      retries: 12
+    networks:
+      - vet_network
+
+
+  vetclinic-report:
+    build: ./vetclinic-report
+    container_name: vetclinic_report
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vetclinic
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?Укажи DB_PASSWORD в .env}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+    networks:
+      - vet_network
+
+
+  vetclinic-gateway:
+    build: ./vetclinic-gateway
+    container_name: vetclinic_gateway
+    ports:
+      - "8082:8082"
+    environment:
+      EMPLOYEE_SERVICE_URL: http://app:8080
+      REPORT_SERVICE_URL: http://vetclinic-report:8081
+    depends_on:
+      app:
+        condition: service_started
+      vetclinic-report:
+        condition: service_started
     networks:
       - vet_network
 

@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: vetclinic-app
   datasource:
     url: jdbc:postgresql://localhost:5432/vetclinic
     username: admin
@@ -9,3 +11,18 @@ spring:
     show-sql: true
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+logging:
+  file:
+    name: "${LOG_DIR:./logs}/${spring.application.name}.log"
+
+  structured:
+    format:
+      file: ecs
+
+  logback:
+    rollingpolicy:
+      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}.%d{yyyy-MM-dd}.%i.log"
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 200MB

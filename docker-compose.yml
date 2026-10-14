@@ -4,7 +4,7 @@ services:
     container_name: vetclinic_db
     environment:
       POSTGRES_DB: vetclinic
-      POSTGRES_USER: admin
+      POSTGRES_USER: ${DB_USER:?user}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?password}
     ports:
       - "5432:5432"
@@ -23,7 +23,7 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vetclinic
-      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?password}
       - LOG_DIR=/logs
     volumes:
@@ -48,7 +48,7 @@ services:
       - "8081:8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vetclinic
-      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?Укажи DB_PASSWORD в .env}
       - LOG_DIR=/logs
     volumes:

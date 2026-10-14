@@ -17,6 +17,7 @@ public class ReportService {
     private final EmployeeRepository repository;
 
     public List<EmployeeReportResponse> getEmployees() {
+        log.info("запрос списка сотрудников из бд");
         return repository.findAllByOrderByIdAsc()
                 .stream()
                 .map(employee -> new EmployeeReportResponse(

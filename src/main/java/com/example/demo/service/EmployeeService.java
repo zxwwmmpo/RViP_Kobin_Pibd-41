@@ -9,38 +9,45 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
     private final EmployeeRepository repository;
 
     public EmployeeResponse hireEmployee(EmployeeHireRequest request) {
+        log.info("начало принятия на работу");
         Employee employee = new Employee();
         employee.setFullName(request.getFullName());
         employee.setQualification(request.getQualification());
         employee.setStatus(Status.Working);
-
+        log.info("SAVE");
         Employee savedEmployee = repository.save(employee);
+        log.info("сотрудник сохранен: id={}", savedEmployee.getId());
         return mapToResponse(savedEmployee);
     }
 
     public EmployeeResponse updateQualification(Long id, String newQualification) {
+        log.info("начало обновления квалификации");
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "сотрудник не найден"));
 
         employee.setQualification(newQualification);
+        log.info("обновлена у: id={}", employee.getId());
         return mapToResponse(repository.save(employee));
     }
 
     public EmployeeResponse fireEmployee(Long id) {
+        log.info("начало увольнения");
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "сотрудник не найден"));
 
         employee.setStatus(Status.Fired);
+        log.info("уволен: id={}", employee.getId());
         return mapToResponse(repository.save(employee));
     }
 

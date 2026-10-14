@@ -12,10 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor
@@ -26,18 +27,21 @@ public class EmployeeController {
     @PostMapping("/hire")
     @Operation(summary = "принять")
     public EmployeeResponse hireEmployee(@Valid @RequestBody EmployeeHireRequest request) {
+        log.info("получен запрос на принятие сотруднка");
         return service.hireEmployee(request);
     }
 
     @PutMapping("/{id}/qualification")
     @Operation(summary = "обновить квалификацию")
     public EmployeeResponse updateQualification(@PathVariable Long id, @Valid @RequestBody EmployeeQualificationRequest request) {
+        log.info("получен запрос на квалификацию");
         return service.updateQualification(id, request.getQualification());
     }
 
     @PutMapping("/{id}/fire")
     @Operation(summary = "уволить")
     public EmployeeResponse fireEmployee(@PathVariable Long id) {
+        log.info("получен запрос на уволльнение сотруднка");
         return service.fireEmployee(id);
     }
 
@@ -56,6 +60,7 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     @Operation(summary = "удалить работника")
     public void deleteEmployee(@PathVariable Long id) {
+        log.info("получен запрос на удаление сотруднка из бд");
         service.deleteEmployee(id);
     }
 }

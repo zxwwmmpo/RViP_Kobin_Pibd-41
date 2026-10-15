@@ -54,7 +54,10 @@ public class EmployeeController {
     @GetMapping
     @Operation(summary = "список всех")
     public List<EmployeeResponse> getAllEmployees() {
-        return service.getAllEmployees();
+        log.info("получен GET ");
+        List<EmployeeResponse> employees = service.getAllEmployees();
+        log.info("отправляем список. кол-воЖ {}", employees.size());
+        return employees;
     }
 
     @DeleteMapping("/{id}")

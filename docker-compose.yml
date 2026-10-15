@@ -44,12 +44,8 @@ services:
   vetclinic-report:
     build: ./vetclinic-report
     container_name: vetclinic_report
-    ports:
-      - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vetclinic
-      - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?Укажи DB_PASSWORD в .env}
+      - EMPLOYEE_SERVICE_URL=http://app:8080
       - LOG_DIR=/logs
     volumes:
       - application_logs:/logs

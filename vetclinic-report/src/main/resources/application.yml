@@ -8,14 +8,17 @@ spring:
   config:
     import: "optional:file:../.env[.properties]"
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/vetclinic
-    username: admin
-    password: ${DB_PASSWORD:?password reports}
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/vetclinic
+#    username: admin
+#    password: ${DB_PASSWORD:?password reports}
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate
 
-  jpa:
-    hibernate:
-      ddl-auto: validate
+employee-service:
+  url: ${EMPLOYEE_SERVICE_URL:http://localhost:8080}
 
 logging:
   file:

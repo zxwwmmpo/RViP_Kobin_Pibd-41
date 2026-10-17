@@ -6,17 +6,29 @@ spring:
     name: vetclinic-gateway
 
   cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            employee:
+              - uri: http://app:8080
+              - uri: http://app-2:8080
+            report:
+              - uri: http://vetclinic-report:8081
+              - uri: http://vetclinic-report-2:8081
+
+
     gateway:
       server:
         webmvc:
           routes:
             - id: employees
-              uri: ${EMPLOYEE_SERVICE_URL:http://localhost:8080}
+              uri: lb://employee
               predicates:
                 - Path=/api/employees,/api/employees/**
 
             - id: reports
-              uri: ${REPORT_SERVICE_URL:http://localhost:8081}
+              uri: lb://report
               predicates:
                 - Path=/api/reports,/api/reports/**
 

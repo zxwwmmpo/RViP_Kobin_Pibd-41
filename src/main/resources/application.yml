@@ -14,15 +14,18 @@ spring:
 
 logging:
   file:
-    name: "${LOG_DIR:./logs}/${spring.application.name}.log"
+    name: "${LOG_DIR:./logs}/${spring.application.name}-${INSTANCE_ID:local}.log"
 
   structured:
     format:
       file: ecs
+    ecs:
+      service:
+        node-name: "${INSTANCE_ID:local}"
 
   logback:
     rollingpolicy:
-      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}.%d{yyyy-MM-dd}.%i.log"
+      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}-${INSTANCE_ID:local}.%d{yyyy-MM-dd}.%i.log"
       max-file-size: 10MB
       max-history: 7
       total-size-cap: 200MB

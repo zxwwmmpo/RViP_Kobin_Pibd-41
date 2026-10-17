@@ -26,6 +26,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?password}
       - LOG_DIR=/logs
+      - INSTANCE_ID=employee-1
     volumes:
       - application_logs:/logs
     depends_on:
@@ -40,6 +41,22 @@ services:
     networks:
       - vet_network
 
+  app-2:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vetclinic
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:?user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?password}
+      LOG_DIR: /logs
+      INSTANCE_ID: employee-2
+    volumes:
+      - application_logs:/logs
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - vet_network
+
 
   vetclinic-report:
     build: ./vetclinic-report
@@ -51,6 +68,25 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?Укажи DB_PASSWORD в .env}
       - LOG_DIR=/logs
+      - INSTANCE_ID=report-1
+    volumes:
+      - application_logs:/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+    networks:
+      - vet_network
+
+  vetclinic-report-2:
+    build: ./vetclinic-report
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vetclinic
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:?user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?password}
+      LOG_DIR: /logs
+      INSTANCE_ID: report-2
     volumes:
       - application_logs:/logs
     depends_on:

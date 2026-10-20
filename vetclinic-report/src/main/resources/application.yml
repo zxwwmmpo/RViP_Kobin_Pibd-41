@@ -8,29 +8,35 @@ spring:
   config:
     import: "optional:file:../.env[.properties]"
 
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/vetclinic
-#    username: admin
-#    password: ${DB_PASSWORD:?password reports}
-#
-#  jpa:
-#    hibernate:
-#      ddl-auto: validate
+
 
 employee-service:
-  url: ${EMPLOYEE_SERVICE_URL:http://localhost:8080}
+  url: http://vetclinic-app
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${HOSTNAME:${random.uuid}}
+
 
 logging:
   file:
-    name: "${LOG_DIR:./logs}/${spring.application.name}.log"
+    name: "${LOG_DIR:./logs}/${spring.application.name}-${HOSTNAME:local}.log"
 
   structured:
     format:
       file: ecs
+    ecs:
+      service:
+        node-name: ${eureka.instance.instance-id}
 
   logback:
     rollingpolicy:
-      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}.%d{yyyy-MM-dd}.%i.log"
+      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}-${HOSTNAME:local}.%d{yyyy-MM-dd}.%i.log"
       max-file-size: 10MB
       max-history: 7
       total-size-cap: 200MB

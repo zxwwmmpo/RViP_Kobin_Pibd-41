@@ -12,17 +12,30 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${HOSTNAME:${random.uuid}}
+
+
 logging:
   file:
-    name: "${LOG_DIR:./logs}/${spring.application.name}.log"
+    name: "${LOG_DIR:./logs}/${spring.application.name}-${HOSTNAME:local}.log"
 
   structured:
     format:
       file: ecs
+    ecs:
+      service:
+        node-name: ${eureka.instance.instance-id}
 
   logback:
     rollingpolicy:
-      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}.%d{yyyy-MM-dd}.%i.log"
+      file-name-pattern: "${LOG_DIR:./logs}/${spring.application.name}-${HOSTNAME:local}.%d{yyyy-MM-dd}.%i.log"
       max-file-size: 10MB
       max-history: 7
       total-size-cap: 200MB

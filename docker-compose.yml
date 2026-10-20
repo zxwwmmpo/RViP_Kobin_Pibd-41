@@ -18,18 +18,18 @@ services:
 
   app:
     build: .
-    container_name: vetclinic_app
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vetclinic
       - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?password}
+      - EUREKA_URL=http://vetclinic-discovery:8761/eureka/
       - LOG_DIR=/logs
     volumes:
       - application_logs:/logs
     depends_on:
       postgres:
+        condition: service_healthy
+      vetclinic-discovery:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/employees/report" ]
@@ -41,16 +41,30 @@ services:
       - vet_network
 
 
+  vetclinic-discovery:
+    build: ./vetclinic-discovery
+    ports:
+      - "127.0.0.1:8761:8761"
+    networks:
+      - vet_network
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8761/" ]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+      retries: 20
+
   vetclinic-report:
     build: ./vetclinic-report
-    container_name: vetclinic_report
     environment:
-      - EMPLOYEE_SERVICE_URL=http://app:8080
+      - EUREKA_URL=http://vetclinic-discovery:8761/eureka/
       - LOG_DIR=/logs
     volumes:
       - application_logs:/logs
     depends_on:
       postgres:
+        condition: service_healthy
+      vetclinic-discovery:
         condition: service_healthy
       app:
         condition: service_healthy
@@ -64,8 +78,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      EMPLOYEE_SERVICE_URL: http://app:8080
-      REPORT_SERVICE_URL: http://vetclinic-report:8081
+      EUREKA_URL: http://vetclinic-discovery:8761/eureka/
       LOG_DIR: /logs
     volumes:
       - application_logs:/logs
@@ -74,6 +87,8 @@ services:
         condition: service_started
       vetclinic-report:
         condition: service_started
+      vetclinic-discovery:
+        condition: service_healthy
     networks:
       - vet_network
 

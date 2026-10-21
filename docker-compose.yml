@@ -23,6 +23,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USER:?user}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?password}
       - EUREKA_URL=http://vetclinic-discovery:8761/eureka/
+      - TRACING_ENDPOINT=http://jaeger:4318/v1/traces
       - LOG_DIR=/logs
     volumes:
       - application_logs:/logs
@@ -31,6 +32,8 @@ services:
         condition: service_healthy
       vetclinic-discovery:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     healthcheck:
       test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/employees/report" ]
       interval: 1s
@@ -58,6 +61,7 @@ services:
     build: ./vetclinic-report
     environment:
       - EUREKA_URL=http://vetclinic-discovery:8761/eureka/
+      - TRACING_ENDPOINT=http://jaeger:4318/v1/traces
       - LOG_DIR=/logs
     volumes:
       - application_logs:/logs
@@ -68,6 +72,8 @@ services:
         condition: service_healthy
       app:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     networks:
       - vet_network
 
@@ -79,6 +85,7 @@ services:
       - "8082:8082"
     environment:
       EUREKA_URL: http://vetclinic-discovery:8761/eureka/
+      TRACING_ENDPOINT: http://jaeger:4318/v1/traces
       LOG_DIR: /logs
     volumes:
       - application_logs:/logs
@@ -89,6 +96,16 @@ services:
         condition: service_started
       vetclinic-discovery:
         condition: service_healthy
+      jaeger:
+        condition: service_started
+    networks:
+      - vet_network
+
+  jaeger:
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.22.0
+    ports:
+      - "127.0.0.1:16686:16686"
+      - "127.0.0.1:4318:4318"
     networks:
       - vet_network
 

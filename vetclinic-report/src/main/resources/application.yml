@@ -22,6 +22,20 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${HOSTNAME:${random.uuid}}
 
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      type: w3c
+
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${TRACING_ENDPOINT:http://localhost:4318/v1/traces}
+          transport: http
+
 
 logging:
   file:

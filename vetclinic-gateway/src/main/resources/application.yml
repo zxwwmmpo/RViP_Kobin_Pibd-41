@@ -20,6 +20,11 @@ spring:
               predicates:
                 - Path=/api/reports,/api/reports/**
 
+            - id: files
+              uri: lb://vetclinic-storage
+              predicates:
+                - Path=/api/files,/api/files/**
+
 eureka:
   client:
     register-with-eureka: false

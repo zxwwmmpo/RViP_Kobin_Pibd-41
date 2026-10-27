@@ -13,6 +13,9 @@ spring:
 employee-service:
   url: http://vetclinic-app
 
+storage-service:
+  url: http://vetclinic-storage
+
 
 eureka:
   client:

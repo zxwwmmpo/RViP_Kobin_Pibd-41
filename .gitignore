@@ -37,3 +37,6 @@ target/
 *.iml
 *.log
 .env
+
+# Local file storage
+**/storage-data/

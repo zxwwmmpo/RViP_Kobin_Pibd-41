@@ -44,6 +44,30 @@ services:
       - vet_network
 
 
+  vetclinic-storage:
+    build: ./vetclinic-storage
+    environment:
+      EUREKA_URL: http://vetclinic-discovery:8761/eureka/
+      TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+      LOG_DIR: /logs
+      STORAGE_DIRECTORY: /data/reports
+    volumes:
+      - application_logs:/logs
+      - report_files:/data/reports
+    depends_on:
+      vetclinic-discovery:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8083/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      start_period: 60s
+      retries: 20
+    networks:
+      - vet_network
+
   vetclinic-discovery:
     build: ./vetclinic-discovery
     ports:
@@ -74,6 +98,8 @@ services:
         condition: service_healthy
       jaeger:
         condition: service_started
+      vetclinic-storage:
+        condition: service_healthy
     networks:
       - vet_network
 
@@ -165,3 +191,4 @@ volumes:
   application_logs:
   elasticsearch_data:
   logstash_data:
+  report_files:

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.example.demo.dto.EmployeePageResponse;
 
 @Slf4j
 @RestController
@@ -52,12 +53,13 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Operation(summary = "список всех")
-    public List<EmployeeResponse> getAllEmployees() {
-        log.info("получен GET ");
-        List<EmployeeResponse> employees = service.getAllEmployees();
-        log.info("отправляем список. кол-воЖ {}", employees.size());
-        return employees;
+    @Operation(summary = "список сотрудников с пагинацией")
+    public EmployeePageResponse getAllEmployees(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        log.info("получен запрос списка сотрудников: page={}, size={}", page, size);
+        EmployeePageResponse response = service.getAllEmployees(page, size);
+        log.info("отправлена страница {}: сотрудников={}, всего={}", response.page(), response.content().size(), response.totalElements());
+
+        return response;
     }
 
     @DeleteMapping("/{id}")

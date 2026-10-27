@@ -12,6 +12,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.example.demo.dto.EmployeePageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @Slf4j
 @Service
@@ -57,10 +61,31 @@ public class EmployeeService {
         return Map.of("Рабочих", working, "Уволенных", fired);
     }
 
-    public List<EmployeeResponse> getAllEmployees() {
-        return repository.findAll().stream()
-                .map(this::mapToResponse)
-                .toList();
+    public EmployeePageResponse getAllEmployees(int page, int size) {
+        if (page < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "номер страницы не может быть отрицательным");
+        }
+
+        if (size < 1 || size > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "размер страницы должен быть от 1 до 100");
+        }
+
+        PageRequest pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.ASC, "id")
+        );
+
+        Page<EmployeeResponse> employees = repository.findAll(pageable)
+                .map(this::mapToResponse);
+
+        return new EmployeePageResponse(
+                employees.getContent(),
+                employees.getNumber(),
+                employees.getSize(),
+                employees.getTotalElements(),
+                employees.getTotalPages()
+        );
     }
 
     public void deleteEmployee(Long id) {

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
+import java.nio.file.StandardCopyOption;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,5 +80,38 @@ public class FileStorageService {
 
         log.info("выдача CSV: id={}", id);
         return new FileSystemResource(file);
+    }
+
+
+    public synchronized FileUploadResponse saveReport(UUID reportId, byte[] content) throws IOException {
+        if (reportId == null || content == null || content.length == 0) {
+            throw new IllegalArgumentException("отсутствует идентификатор или содержимое отчета");
+        }
+        if (content.length > 20 * 1024 * 1024) {
+            throw new IllegalArgumentException("размер CSV превышает 20 МБ");
+        }
+
+        String fileName = reportId + ".csv";
+        Path destination = directory.resolve(fileName);
+
+        if (Files.isRegularFile(destination, LinkOption.NOFOLLOW_LINKS)) {
+            log.info("отчет уже сохранен: reportId={}", reportId);
+            return new FileUploadResponse(reportId.toString(), fileName, Files.size(destination));
+        }
+
+        Path temporary = Files.createTempFile(directory, reportId + "-", ".tmp");
+
+        try {
+            Files.write(temporary, content);
+            Files.move(temporary, destination, StandardCopyOption.ATOMIC_MOVE);
+            log.info("отчет сохранен: reportId={}, size={}", reportId, content.length);
+            return new FileUploadResponse(reportId.toString(), fileName, content.length);
+        } finally {
+            try {
+                Files.deleteIfExists(temporary);
+            } catch (IOException exception) {
+                log.warn("не удалось удалить временный файл: {}", temporary, exception);
+            }
+        }
     }
 }

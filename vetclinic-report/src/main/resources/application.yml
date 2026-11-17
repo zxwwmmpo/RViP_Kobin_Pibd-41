@@ -2,6 +2,16 @@ server:
   port: 8081
 
 spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
   application:
     name: vetclinic-report
 
@@ -13,8 +23,6 @@ spring:
 employee-service:
   url: http://vetclinic-app
 
-storage-service:
-  url: http://vetclinic-storage
 
 
 eureka:
